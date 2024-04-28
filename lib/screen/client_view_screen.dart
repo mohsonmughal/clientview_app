@@ -1,3 +1,4 @@
+import 'package:client_view_app/screen/client_view_setting/client_view_setting.dart';
 import 'package:client_view_app/screen/tip_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,6 +14,14 @@ class _ClientViewScreenState extends State<ClientViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: DrawerButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const ClientViewSetting()));
+        },
+      ),
       backgroundColor: const Color(0xff2D333A),
       appBar: AppBar(
         title: const Text('Eat365 Cafe'),
