@@ -1,16 +1,19 @@
+import 'dart:convert';
+
+import 'package:client_view_app/model/kds_tip_model.dart';
+import 'package:client_view_app/screen/controller/client_controller.dart';
 import 'package:client_view_app/screen/receipt_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
-class TipScreen extends StatefulWidget {
-  final List<double> tipPercentages; // Your dynamic list of tip percentages
+class TipScreen extends StatefulWidget {// Your dynamic list of tip percentages
 
   const TipScreen({
     super.key,
-    required this.tipPercentages,
   });
 
   @override
@@ -25,8 +28,34 @@ class _TipScreenState extends State<TipScreen> {
   }
 
   void _handleSaveButtonPressed() async {
+    clientController.client!.write(jsonEncode({'tip':clientController.totalTipGetter}));
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ReceiptScreen()));
+        context, MaterialPageRoute(builder: (context) => const ReceiptScreen()));
+  }
+  bool canBeDouble(String value){
+    try{
+      double.parse(value);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+  bool canBeInt(String value){
+    try{
+      int.parse(value);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+  KdsSettings? kdsSettings;
+  late ClientController clientController;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    clientController=Provider.of<ClientController>(context,listen: false);
+    kdsSettings=clientController.kdsSettings;
   }
 
   @override
@@ -54,7 +83,7 @@ class _TipScreenState extends State<TipScreen> {
                   Column(
                     children: [
                       Text(
-                        '\$0.00',
+                        '\$${clientController.totalTipGetter.toStringAsFixed(2)}',
                         style: TextStyle(
                             fontSize: 12.sp, fontWeight: FontWeight.bold),
                       ),
@@ -68,7 +97,7 @@ class _TipScreenState extends State<TipScreen> {
                   Column(
                     children: [
                       Text(
-                        '\$81.61',
+                        '\$${(clientController.totalBillGetter+clientController.totalTipGetter).toStringAsFixed(2)}',
                         style: TextStyle(
                             fontSize: 12.sp, fontWeight: FontWeight.bold),
                       ),
@@ -88,11 +117,53 @@ class _TipScreenState extends State<TipScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    ...widget.tipPercentages.map((percentage) => Padding(
+                    ...kdsSettings!.customTipRow!.map((percentage) =>
+                        percentage.active=='1'?
+                        Padding(
                           padding: const EdgeInsets.all(10.0).r,
                           child: OutlinedButton(
                             onPressed: () {
                               // Handle tip percentage click
+                              double tipOn=kdsSettings!.tipCalculation=='1'?
+                              clientController.totalBillGetter:clientController.subTotalGetter;
+                              // if(kdsSettings!.enableSmartTipping=='1'){
+                              //   if(canBeDouble(kdsSettings!.minimumOrderAmountThreshold.toString())&&
+                              //       double.parse(kdsSettings!.minimumOrderAmountThreshold!)<=tipOn
+                              //       // &&
+                              //       // canBeInt(kdsSettings!.minimumNumberOfCustomersThreshold.toString())&&
+                              //       // int.parse(kdsSettings!.minimumNumberOfCustomersThreshold!)<=clientController.totalGuest
+                              //   ) {
+                              //     if (kdsSettings!.autoTypeTippingThreshold ==
+                              //         'flat') {
+                              //       clientController.calculateTip(
+                              //           double.parse(kdsSettings!.flatTippingThreshold!));
+                              //       setState(() {
+                              //
+                              //       });
+                              //       return;
+                              //     } else {
+                              //       var value=(double.parse(kdsSettings!.flatTippingThreshold!)/ 100)* tipOn;
+                              //       clientController.calculateTip(value);
+                              //       setState(() {
+                              //
+                              //       });
+                              //       return;
+                              //     }
+                              //   }
+                              // }
+                              if(kdsSettings!.customTypeTippingThreshold=='flat'){
+
+                                if(percentage.flatAmount!.isNotEmpty){
+                                  var value=double.parse(percentage.flatAmount!);
+                                  clientController.calculateTip(value);
+                                }
+                              }else{
+                                if(percentage.percentageAmount!.isNotEmpty){
+                                var value=(double.parse(percentage.percentageAmount!)/ 100)* tipOn;
+                                clientController.calculateTip(value);
+                                }
+                              }
+                              setState(() {});
                             },
                             style: OutlinedButton.styleFrom(
                               minimumSize: Size(
@@ -101,9 +172,14 @@ class _TipScreenState extends State<TipScreen> {
                                   color: Colors.lightBlue,
                                   width: 2), // Set the border color and width
                             ),
-                            child: Text('${percentage.toStringAsFixed(0)}%'),
+                            child: Text(
+                                kdsSettings!.customTypeTippingThreshold=='flat'?
+                                '\$${percentage.flatAmount}':
+                                '${percentage.percentageAmount}%',
+                              style: TextStyle(fontSize: 10.sp,fontWeight: FontWeight.w500),
+                            ),
                           ),
-                        )),
+                        ):const SizedBox()),
                     Padding(
                       padding: const EdgeInsets.all(8.0).r,
                       child: OutlinedButton(
@@ -117,9 +193,9 @@ class _TipScreenState extends State<TipScreen> {
                               color: Colors.green,
                               width: 2), // Set the border color and width
                         ),
-                        child: const Text(
+                        child: Text(
                           'Custom',
-                          style: TextStyle(color: Colors.green),
+                          style: TextStyle(color: Colors.green,fontSize: 10.sp,),
                         ),
                       ),
                     ),
@@ -136,9 +212,9 @@ class _TipScreenState extends State<TipScreen> {
                               color: Colors.orange,
                               width: 2), // Set the border color and width
                         ),
-                        child: const Text(
+                        child: Text(
                           'No Tip',
-                          style: TextStyle(color: Colors.orange),
+                          style: TextStyle(color: Colors.orange,fontSize: 10.sp,),
                         ),
                       ),
                     ),

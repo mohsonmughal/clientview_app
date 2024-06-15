@@ -1,6 +1,10 @@
+import 'package:client_view_app/screen/client_view_screen.dart';
+import 'package:client_view_app/screen/controller/client_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/route_manager.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class ReceiptScreen extends StatefulWidget {
@@ -49,10 +53,11 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
     bool isSelected = selectedReceipt == text;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedReceipt = text;
-        });
         handleOptionTap(text);
+        // setState(() {
+        //   selectedReceipt = text;
+        // });
+
       },
       child: Container(
         height: 100.h,
@@ -79,7 +84,10 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
   void handleOptionTap(String option) {
     if (option == 'No Thanks') {
       // Do nothing for now or close any open dialogs (not directly required here)
-      Navigator.of(context).pop();
+
+      Provider.of<ClientController>(context,listen: false).clear();
+      Get.offAll(ClientViewScreen());
+
     } else if (option == 'Print') {
       Fluttertoast.showToast(
         msg: 'Receipt has been printed',
@@ -90,9 +98,12 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         textColor: Colors.white,
         fontSize: 6.sp,
       );
+      Navigator.of(context).pop();
+      Provider.of<ClientController>(context,listen: false).clear();
     } else {
       addNewBookingPopup(context, option);
     }
+    return;
   }
 
   void addNewBookingPopup(BuildContext context, String option) {
@@ -176,6 +187,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                             );
                           } else {
                             Navigator.of(context).pop();
+                            Provider.of<ClientController>(context,listen: false).clear();
                           }
                         },
                         child: Text(
