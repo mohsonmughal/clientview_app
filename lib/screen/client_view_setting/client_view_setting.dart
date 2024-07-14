@@ -19,7 +19,6 @@ class ClientViewSetting extends StatefulWidget {
 
 class _ClientViewSettingState extends State<ClientViewSetting> {
   TextEditingController networkIPController = TextEditingController();
-  // TextEditingController portController = TextEditingController();
   late ClientController clientController;
   final _formKey = GlobalKey<FormState>();
   @override
@@ -32,15 +31,12 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
 
   setInfoInSharedPref() {
     SharedPreferences.getInstance().then((prefs) {
-      // prefs.setInt('port', int.parse(portController.text));
       prefs.setString('ip', networkIPController.text);
     });
   }
 
   getInfoInSharedPref() {
     SharedPreferences.getInstance().then((prefs) {
-      // portController.text =
-      // prefs.getInt('port') != null ? prefs.getInt('port').toString() : '';
       networkIPController.text = prefs.getString('ip') ?? '';
       setState(() {});
     });

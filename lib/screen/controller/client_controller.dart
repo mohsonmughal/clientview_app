@@ -85,8 +85,8 @@ class ClientController with ChangeNotifier{
       _kdsSettings = KdsSettings.fromMap(message['kdsSettings']);
       if(_kdsSettings!.tipActive=='1') {
         _totalTip = 0.00;
-        double tipOn=_kdsSettings!.tipCalculation=='1'?
-       _totalBill:_subTotal;
+       //  double tipOn=_kdsSettings!.tipCalculation=='1'?
+       // _totalBill:_subTotal;
         // if(kdsSettings!.enableSmartTipping=='1'){
         //   print('hereeeeee2');
         //   if(canBeDouble(kdsSettings!.minimumOrderAmountThreshold.toString())&&
