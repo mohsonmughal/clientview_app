@@ -99,7 +99,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         fontSize: 6.sp,
       );
       Provider.of<ClientController>(context,listen: false).clear();
-      Get.back();
+      Get.offAll(ClientViewScreen());
     } else {
       addNewBookingPopup(context, option);
     }
@@ -189,7 +189,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
 
                             Provider.of<ClientController>(context,listen: false).clear();
                             Navigator.of(context,rootNavigator: true).pop();
-                            Get.back();
+                            Get.offAll(ClientViewScreen());
                           }
                         },
                         child: Text(
