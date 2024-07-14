@@ -87,7 +87,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
 
       Provider.of<ClientController>(context,listen: false).clear();
       Get.offAll(ClientViewScreen());
-
+      return;
     } else if (option == 'Print') {
       Fluttertoast.showToast(
         msg: 'Receipt has been printed',
@@ -98,8 +98,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
         textColor: Colors.white,
         fontSize: 6.sp,
       );
-      Navigator.of(context).pop();
       Provider.of<ClientController>(context,listen: false).clear();
+      Get.back();
     } else {
       addNewBookingPopup(context, option);
     }
@@ -165,7 +165,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                             backgroundColor:
                                 MaterialStatePropertyAll(Colors.grey)),
                         onPressed: () {
-                          Navigator.of(context).pop();
+                         Navigator.of(context,rootNavigator: true).pop();
                         },
                         child: Text(
                           'Cancel',
@@ -186,8 +186,10 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               fontSize: 6.sp,
                             );
                           } else {
-                            Navigator.of(context).pop();
+
                             Provider.of<ClientController>(context,listen: false).clear();
+                            Navigator.of(context,rootNavigator: true).pop();
+                            Get.back();
                           }
                         },
                         child: Text(
