@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           builder: (_, child) {
             return  const GetMaterialApp(
               debugShowCheckedModeBanner: false,
-              title: 'Client View Screen',
+              title: 'Customer View Screen',
               home: ClientViewScreen(),
             );
           }),
