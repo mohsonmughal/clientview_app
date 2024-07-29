@@ -1,8 +1,6 @@
 import 'package:client_view_app/model/models.dart';
-import 'package:client_view_app/screen/client_view_setting/client_view_setting.dart';
 import 'package:client_view_app/screen/controller/client_controller.dart';
-import 'package:client_view_app/screen/tip_screen.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:client_view_app/screen/userkey/userkey.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -16,36 +14,34 @@ class ClientViewScreen extends StatefulWidget {
 }
 
 class _ClientViewScreenState extends State<ClientViewScreen> {
-
   getPresentAppConnection() {
     SharedPreferences.getInstance().then((prefs) async {
       String? ip = prefs.getString('ip');
-     bool? value=await Provider.of<ClientController>(context,listen: false).connect(ip);
-      if (value!=null&&!value||value==null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(
-          content: Text(
-              "No Parent App found for '${ip}'"),
+      bool? value = await Provider.of<ClientController>(context, listen: false)
+          .connect(ip);
+      if (value != null && !value || value == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("No Parent App found for '${ip}'"),
           duration: const Duration(milliseconds: 700),
         ));
       }
     });
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getPresentAppConnection();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: DrawerButton(
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const ClientViewSetting()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const UserKeyScreen()));
         },
       ),
       backgroundColor: const Color(0xff2D333A),
@@ -67,24 +63,28 @@ class _ClientViewScreenState extends State<ClientViewScreen> {
                       fit: BoxFit.fill,
                     ),
                   ),
-                  Consumer<ClientController>(builder: (context,state,child)=>
-                      Expanded(
-                        flex: 2,
-                        // Wrap your ListView with a Container to set the background color
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: ListView(
+                  Consumer<ClientController>(
+                    builder: (context, state, child) => Expanded(
+                      flex: 2,
+                      // Wrap your ListView with a Container to set the background color
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: ListView(
                                   shrinkWrap: true,
                                   physics: const BouncingScrollPhysics(),
-                                  children: state.productListGetter.map<Widget>((e) => CustomListItem(
-                                    quantity: e.qty,
-                                    title: e.productName,
-                                    price: e.price,
-                                    modifiers: e.modifiers,
-                                  ),).toList()
+                                  children: state.productListGetter
+                                      .map<Widget>(
+                                        (e) => CustomListItem(
+                                          quantity: e.qty,
+                                          title: e.productName,
+                                          price: e.price,
+                                          modifiers: e.modifiers,
+                                        ),
+                                      )
+                                      .toList()
 
                                   // <Widget>[
                                   //   CustomListItem(
@@ -127,80 +127,84 @@ class _ClientViewScreenState extends State<ClientViewScreen> {
                                   //       title: 'Free Coca-Cola',
                                   //       price: '0.00'),
                                   // ],
-                                ),
-                              ),
-                               TotalPriceCard(
-                                totalBill: state.subTotalGetter.toStringAsFixed(2),
-                                totalGrautity: state.totalGratuityGetter.toStringAsFixed(2),
-                                totalTax: state.totalTaxGetter.toStringAsFixed(2),
-                                discount: state.totalDiscountGetter.toStringAsFixed(2),
-                                totalPay: state.totalBillGetter.toStringAsFixed(2),
-                              ), // This stays outside and won't scroll
-                              // Row(
-                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              //   children: [
-                              //     Expanded(
-                              //       child: GestureDetector(
-                              //         onTap: () {
-                              //           // Navigator.push(
-                              //           //     context,
-                              //           //     MaterialPageRoute(
-                              //           //         builder: (context) =>
-                              //           //         const TipScreen(
-                              //           //             tipPercentages: [
-                              //           //               10,
-                              //           //               15,
-                              //           //               20,
-                              //           //               30
-                              //           //             ])));
-                              //         },
-                              //         child: Container(
-                              //           height: 60.h,
-                              //           color: Colors.orange,
-                              //           child: Column(
-                              //             mainAxisAlignment:
-                              //             MainAxisAlignment.center,
-                              //             children: [
-                              //               Text('Card',
-                              //                   style: TextStyle(
-                              //                       color: Colors.white,
-                              //                       fontSize: 9.sp)),
-                              //               Text('(\$81.60)',
-                              //                   style: TextStyle(
-                              //                       color: Colors.white,
-                              //                       fontSize: 6.sp)),
-                              //             ],
-                              //           ),
-                              //         ),
-                              //       ),
-                              //     ),
-                              //     Container(width: 1.w),
-                              //     Expanded(
-                              //       child: Container(
-                              //         height: 60.h,
-                              //         color: Colors.green,
-                              //         child: Column(
-                              //           mainAxisAlignment: MainAxisAlignment.center,
-                              //           children: [
-                              //             Text('Cash',
-                              //                 style: TextStyle(
-                              //                     color: Colors.white,
-                              //                     fontSize: 9.sp)),
-                              //             Text('(\$85.15)',
-                              //                 style: TextStyle(
-                              //                     color: Colors.white,
-                              //                     fontSize: 6.sp)),
-                              //           ],
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ],
-                              // ),
-                            ],
-                          ),
+                                  ),
+                            ),
+                            TotalPriceCard(
+                              totalBill:
+                                  state.subTotalGetter.toStringAsFixed(2),
+                              totalGrautity:
+                                  state.totalGratuityGetter.toStringAsFixed(2),
+                              totalTax: state.totalTaxGetter.toStringAsFixed(2),
+                              discount:
+                                  state.totalDiscountGetter.toStringAsFixed(2),
+                              totalPay:
+                                  state.totalBillGetter.toStringAsFixed(2),
+                            ), // This stays outside and won't scroll
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   children: [
+                            //     Expanded(
+                            //       child: GestureDetector(
+                            //         onTap: () {
+                            //           // Navigator.push(
+                            //           //     context,
+                            //           //     MaterialPageRoute(
+                            //           //         builder: (context) =>
+                            //           //         const TipScreen(
+                            //           //             tipPercentages: [
+                            //           //               10,
+                            //           //               15,
+                            //           //               20,
+                            //           //               30
+                            //           //             ])));
+                            //         },
+                            //         child: Container(
+                            //           height: 60.h,
+                            //           color: Colors.orange,
+                            //           child: Column(
+                            //             mainAxisAlignment:
+                            //             MainAxisAlignment.center,
+                            //             children: [
+                            //               Text('Card',
+                            //                   style: TextStyle(
+                            //                       color: Colors.white,
+                            //                       fontSize: 9.sp)),
+                            //               Text('(\$81.60)',
+                            //                   style: TextStyle(
+                            //                       color: Colors.white,
+                            //                       fontSize: 6.sp)),
+                            //             ],
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     ),
+                            //     Container(width: 1.w),
+                            //     Expanded(
+                            //       child: Container(
+                            //         height: 60.h,
+                            //         color: Colors.green,
+                            //         child: Column(
+                            //           mainAxisAlignment: MainAxisAlignment.center,
+                            //           children: [
+                            //             Text('Cash',
+                            //                 style: TextStyle(
+                            //                     color: Colors.white,
+                            //                     fontSize: 9.sp)),
+                            //             Text('(\$85.15)',
+                            //                 style: TextStyle(
+                            //                     color: Colors.white,
+                            //                     fontSize: 6.sp)),
+                            //           ],
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                          ],
                         ),
-                      ),),
-
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -249,7 +253,8 @@ class CustomListItem extends StatelessWidget {
                           if (quantity != null) ...[
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0).r,
+                                  const EdgeInsets.symmetric(horizontal: 10.0)
+                                      .r,
                               child: Text(
                                 '$quantity',
                                 style: TextStyle(
@@ -260,8 +265,8 @@ class CustomListItem extends StatelessWidget {
                           Flexible(
                             child: Text(
                               title,
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 7.0.sp),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 7.0.sp),
                               overflow: TextOverflow
                                   .clip, // Clip long texts and wrap them
                             ),
@@ -269,13 +274,15 @@ class CustomListItem extends StatelessWidget {
                         ],
                       ),
                       if (subtitle != null) ...[
-                        SizedBox(height: 3.0.r), // Space between title and subtitle
+                        SizedBox(
+                            height: 3.0.r), // Space between title and subtitle
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 33.0).r,
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 33.0).r,
                           child: Text(
                             subtitle!,
-                            style:
-                                TextStyle(color: Colors.white70, fontSize: 7.0.sp),
+                            style: TextStyle(
+                                color: Colors.white70, fontSize: 7.0.sp),
                           ),
                         ),
                       ],
@@ -295,47 +302,57 @@ class CustomListItem extends StatelessWidget {
           if (modifiers.isNotEmpty) ...[
             SizedBox(height: 3.0.r), // Space between title and subtitle
             Column(
-              children: modifiers.map((e) =>  Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 15.0, bottom: 15).r,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              SizedBox(width:40.w,),
-                              Flexible(
-                                child: Text(
-                                  e.name,
-                                  style:
-                                  TextStyle(color: Colors.white, fontSize: 6.0.sp),
-                                  overflow: TextOverflow
-                                      .clip, // Clip long texts and wrap them
+              children: modifiers
+                  .map(
+                    (e) => Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(right: 15.0, bottom: 15)
+                                    .r,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    SizedBox(
+                                      width: 40.w,
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        e.name,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 6.0.sp),
+                                        overflow: TextOverflow
+                                            .clip, // Clip long texts and wrap them
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 10.0).r,
+                          child: Text(
+                            '\$${(double.parse(e.rate) * quantity!).toStringAsFixed(2)}',
+                            style: TextStyle(
+                                color: Colors.green, fontSize: 6.0.sp),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0).r,
-                    child: Text(
-                      '\$${(double.parse(e.rate)*quantity!).toStringAsFixed(2)}',
-                      style: TextStyle(color: Colors.green, fontSize: 6.0.sp),
-                    ),
-                  ),
-                ],
-              ),).toList(),
+                  )
+                  .toList(),
             ),
-
           ],
         ],
       ),
@@ -375,8 +392,7 @@ class TotalPriceCard extends StatelessWidget {
                 Expanded(child: buildPriceRow('Tip: ', '0.00')),
               ],
             ),
-            const SizedBox(
-                height: 10.0),
+            const SizedBox(height: 10.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

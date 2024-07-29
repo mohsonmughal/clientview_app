@@ -1,5 +1,5 @@
-
 import 'package:client_view_app/helpers/responsive.dart';
+import 'package:client_view_app/screen/client_view_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:network_info_plus/network_info_plus.dart';
@@ -46,17 +46,23 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: const Color(0xff2D333A),
         appBar: AppBar(
+          backgroundColor: Colors.black45, // Set the AppBar background color
           centerTitle: true,
-          title: Text(
+          title: const Text(
             'Client View Settings',
-            style: TextStyle(color: Colors.black, fontSize: 20.0),
+            style: TextStyle(color: Colors.white, fontSize: 20.0),
           ),
           leading: InkWell(
               onTap: () {
                 Navigator.of(context).pop();
               },
-              child: Center(child: Icon(Icons.arrow_back_ios))),
+              child: const Center(
+                  child: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              ))),
         ),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -83,14 +89,15 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
                   ),
 
                   // Text(_responseFromNativeCode),
-                  const SizedBox(
-                    height: 30,
-                  ),
+                  // const SizedBox(
+                  //   height: 30,
+                  // ),
                   Consumer<ClientController>(
-                    builder: (context, prov, child) => ElevatedButton(
+                    builder: (BuildContext context, prov, child) =>
+                        ElevatedButton(
                       style: ButtonStyle(
                         backgroundColor:
-                        MaterialStateProperty.resolveWith((states) {
+                            MaterialStateProperty.resolveWith((states) {
                           // If the button is pressed, return green, otherwise blue
                           if (prov.client != null && prov.client!.isConnected) {
                             return Colors.red;
@@ -103,8 +110,10 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
                           if (prov.client == null ||
                               (prov.client != null &&
                                   !prov.client!.isConnected)) {
-                            var value =  await Provider.of<ClientController>(context,listen: false).connect(
-                                networkIPController.text);
+                            var value = await Provider.of<ClientController>(
+                                    context,
+                                    listen: false)
+                                .connect(networkIPController.text);
                             if (!value) {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
@@ -119,11 +128,17 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
                           setInfoInSharedPref();
                           setState(() {});
                         }
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ClientViewScreen(),
+                            ));
                       },
                       child: Text(
                         prov.client != null && prov.client!.isConnected
                             ? 'Disconnect'
                             : 'Connect',
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
@@ -138,18 +153,22 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
 
   Row textFieldWidget(String title,
       {hint,
-        postfixText,
-        required TextEditingController controller,
-        validate = false}) {
+      postfixText,
+      required TextEditingController controller,
+      validate = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title),
+        Text(
+          title,
+          style: const TextStyle(color: Colors.white),
+        ),
         SizedBox(
             width: Responsive.isMobile(context)
                 ? 250.w
                 : MediaQuery.of(context).size.width * 0.8,
             child: TextFormField(
+              style: const TextStyle(color: Colors.white),
               controller: controller,
               validator: (value) {
                 if (value == null || (value != null && value.trim().isEmpty)) {
@@ -172,35 +191,35 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
               decoration: InputDecoration(
                 suffixIcon: postfixText != null
                     ? Padding(
-                  padding: const EdgeInsets.only(right: 5.0),
-                  child: InkWell(
-                    onTap: () async {
-                      if (postfixText == 'GET IP') {
-                        final info = NetworkInfo();
-                        final ip = await info.getWifiIP();
-                        // final String subnet = ip!.substring(0, ip.lastIndexOf('.'));
-                        if (ip != null) {
-                          controller.text = ip;
-                          setState(() {});
-                        }
-                      }
-                    },
-                    child: SizedBox(
-                        width: 20,
-                        child: Center(
-                            child: Text(
-                              postfixText,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: postfixText == 'GET IP'
-                                      ? Colors.blueAccent
-                                      : Colors.grey),
-                            ))),
-                  ),
-                )
+                        padding: const EdgeInsets.only(right: 5.0),
+                        child: InkWell(
+                          onTap: () async {
+                            if (postfixText == 'GET IP') {
+                              final info = NetworkInfo();
+                              final ip = await info.getWifiIP();
+                              // final String subnet = ip!.substring(0, ip.lastIndexOf('.'));
+                              if (ip != null) {
+                                controller.text = ip;
+                                setState(() {});
+                              }
+                            }
+                          },
+                          child: SizedBox(
+                              width: 20,
+                              child: Center(
+                                  child: Text(
+                                postfixText,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: postfixText == 'GET IP'
+                                        ? Colors.blueAccent
+                                        : Colors.grey),
+                              ))),
+                        ),
+                      )
                     : null,
                 hintText: hint,
-                contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
               ),
             ))
       ],
