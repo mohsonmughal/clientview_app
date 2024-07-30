@@ -66,10 +66,12 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
+          child: Form(
+            key: _formKey,
+            child: Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(
                     height: 20,
@@ -84,9 +86,7 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
                   //     // postfixText: 'MS',
                   //     controller: portController,
                   //     validate: true),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 100),
 
                   // Text(_responseFromNativeCode),
                   // const SizedBox(
@@ -97,7 +97,7 @@ class _ClientViewSettingState extends State<ClientViewSetting> {
                         ElevatedButton(
                       style: ButtonStyle(
                         backgroundColor:
-                            MaterialStateProperty.resolveWith((states) {
+                            WidgetStateProperty.resolveWith((states) {
                           // If the button is pressed, return green, otherwise blue
                           if (prov.client != null && prov.client!.isConnected) {
                             return Colors.red;
