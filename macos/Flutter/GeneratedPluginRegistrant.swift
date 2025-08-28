@@ -5,7 +5,7 @@
 import FlutterMacOS
 import Foundation
 
-import network_info_plus_macos
+import network_info_plus
 import shared_preferences_foundation
 import video_player_avfoundation
 
